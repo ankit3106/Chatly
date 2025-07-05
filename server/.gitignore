@@ -1,2 +1,28 @@
+# Node modules
 node_modules/
+
+# Environment files
 .env
+
+# Log files
+*.log
+logs/
+npm-debug.log*
+
+# Coverage reports (e.g., from Jest)
+coverage/
+
+# Build outputs (if you're bundling the server)
+dist/
+build/
+
+# OS & IDE noise
+.DS_Store
+.idea/
+.vscode/
+
+# Optional: temp files & system artifacts
+*.swp
+*.swo
+*.bak
+*.tmp
