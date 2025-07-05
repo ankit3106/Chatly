@@ -15,7 +15,7 @@ export const signup = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user) {
-            return res.json({ success: false, message: "Account already exixts" })
+            return res.json({ success: false, message: "Account already exists" })
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -27,7 +27,9 @@ export const signup = async (req, res) => {
 
         const token = generateToken(newUser._id);
 
-        res.json({ success: true, userData: newUser, token, message: "Account created Successfully" });
+        // res.json({ success: true, userData: newUser, token, message: "Account created Successfully" });
+        res.json({ success: true, user: newUser, token, message: "Account created Successfully" });
+
 
     } catch (error) {
         console.log(error);
@@ -43,15 +45,19 @@ export const login = async (req, res) => {
 
         const userData = await User.findOne({ email });
 
+        if (!userData) {
+            return res.json({ success: false, message: "Invalid Credentials" });
+        }
+
         const isPasswordCorrect = await bcrypt.compare(password, userData.password);
 
         if (!isPasswordCorrect) {
-            return rew.json({ success: false, message: "Invalid Credentials" });
+            return res.json({ success: false, message: "Invalid Credentials" });
         }
 
         const token = generateToken(userData._id);
 
-        res.json({ success: true, userData, token, message: "Login Successful" })
+        res.json({ success: true, user:userData, token, message: "Login Successful" })
 
     } catch (error) {
         console.log(error);

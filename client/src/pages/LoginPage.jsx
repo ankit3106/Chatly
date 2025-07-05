@@ -1,22 +1,28 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import assets from '../assets/assets.js'
+import { AuthContext } from '../../context/AuthContext.jsx';
 
 const LoginPage = () => {
 
   const [currState, setcurrState] = useState("Sign up");
-  const [fulllName, setFulllName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [bio, setBio] = useState("");
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+
+  const { login } = useContext(AuthContext);
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-      
-    if(currState === 'Sign up' && !isDataSubmitted){
+
+    if (currState === 'Sign up' && !isDataSubmitted) {
       setIsDataSubmitted(true);
       return;
     }
+
+    login(currState === "Sign up" ? 'signup' : 'login', { fullName, email, password, bio });
 
   }
 
@@ -38,7 +44,7 @@ const LoginPage = () => {
 
         {currState === "Sign up" && !isDataSubmitted && (
           <input
-            onChange={(e) => setFulllName(e.target.value)} value={fulllName}
+            onChange={(e) => setFullName(e.target.value)} value={fullName}
             type="text" className='p-2 border border-gray-500 rounded-md focus:outline-none' placeholder='Full Name' required />
         )}
 
@@ -61,14 +67,20 @@ const LoginPage = () => {
           )
         }
 
-        <button type='submit' className='py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md cursor-pointer'>
+        <button
+          type='submit'
+          disabled={currState === "Sign up" && !agreed}
+          className='py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md cursor-pointer'>
           {currState === "Sign up" ? "Create Account" : "Login Now"}
         </button>
 
+        {
+          currState === "Sign up" &&
         <div className='flex items-center gap-2 text-sm text-gray-500'>
-          <input type="checkbox" />
+          <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} />
           <p className='text-sm text-white' >Agree to the terms of use & privacy policy.</p>
         </div>
+        } 
 
         <div className='flex flex-col gap-2'>
           {currState === "Sign up" ? (

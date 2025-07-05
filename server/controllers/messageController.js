@@ -69,15 +69,51 @@ export const markMessageAsSeen = async (req, res)=>{
 
 // Send message to Selected User
 
-export const sendMessage = async (req, res) =>{
+// export const sendMessage = async (req, res) =>{
+//     try {
+//         const {text, image} = req.body;
+//         const receiverId = req.params.id;
+//         const senderId = req.user._id;
+
+//         let imageUrl;
+
+//         if(!imageUrl){
+//             const uploadResponse = await cloudinary.uploader.upload(image);
+//             imageUrl = uploadResponse.secure_url;
+//         }
+
+//         const newMessage = await Message.create({
+//             senderId,
+//             receiverId,
+//             text,
+//             image: imageUrl,
+//         })
+
+//         // Emit the new message to the receiver's socket
+//         const receiverSocketId = userSocketMap[receiverId];
+//         if(receiverSocketId){
+//             io.to(receiverSocketId).emit("newMessage", newMessage)
+//         }
+
+//         res.json({success:true, newMessage});
+
+
+//     } catch (error) {
+//         console.log(error.message);
+//         res.json({ success: false, message: error.message })
+//     }
+// }
+
+export const sendMessage = async (req, res) => {
     try {
-        const {text, image} = req.body;
+        const { text, image } = req.body;
         const receiverId = req.params.id;
         const senderId = req.user._id;
 
-        let imageUrl;
+        let imageUrl = "";
 
-        if(!imageUrl){
+        // Only upload if image is provided
+        if (image) {
             const uploadResponse = await cloudinary.uploader.upload(image);
             imageUrl = uploadResponse.secure_url;
         }
@@ -86,20 +122,19 @@ export const sendMessage = async (req, res) =>{
             senderId,
             receiverId,
             text,
-            image: imageUrl
-        })
+            image: imageUrl // will be "" if no image
+        });
 
         // Emit the new message to the receiver's socket
         const receiverSocketId = userSocketMap[receiverId];
-        if(receiverSocketId){
-            io.to(receiverSocketId).emit("newMessage", newMessage)
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage);
         }
 
-        res.json({success:true, newMessage});
-
+        res.json({ success: true, newMessage });
 
     } catch (error) {
         console.log(error.message);
-        res.json({ success: false, message: error.message })
+        res.json({ success: false, message: error.message });
     }
 }
