@@ -1,3 +1,4 @@
+import React from "react"; 
 import { createContext, useEffect, useState } from "react";
 import axios from "axios"
 import toast from "react-hot-toast";
@@ -30,6 +31,54 @@ export const AuthProvider = ({children}) =>{
         }
     }
 
+    // Login function to handle user authentication and socket connection
+    const login = async (state, credentials)=>{
+        try {
+            const {data} = await axios.post(`/api/auth/${state}`, credentials);
+            if(data.success){
+                setAuthUser(data.user);
+                connectSocket(data.user);
+
+                axios.defaults.headers.common["token"] = data.token;
+                setToken(data.token);
+                localStorage.setItem("token", data.token);
+                toast.success(data.message);
+            }
+            else{
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    // logout function to handle user logout and socket disconnection 
+
+    const logout = async () =>{
+        localStorage.removeItem("token");
+        setToken(null);
+        setAuthUser(null);
+        setOnlineUsers([]);
+        axios.defaults.headers.common["token"] = null;
+        toast.success("Logged out Successfully");
+        socket.disconnect();
+    }
+
+    // Update the profile function to handle user profile updates
+
+    const updateProfile = async (body) =>{
+        try {
+            const {data} = await axios.put("/api/auth/update-profile", body);
+            if(data.success){
+                setAuthUser(data.user);
+                toast.success("Profile Updated Successfully");
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+
     // Connect socket function to handle socket connections and online users updates
     const connectSocket = (userData)  =>{
         if(!userData || socket?.connected) return;
@@ -58,7 +107,11 @@ export const AuthProvider = ({children}) =>{
         axios,
         authUser,
         onlineUsers,
-        socket
+        socket,
+        login,
+        logout,
+        updateProfile
+
     }
     return (
         <AuthContext.Provider value = {value} >
