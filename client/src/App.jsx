@@ -1,12 +1,14 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import HomePage from './pages/HomePage.jsx' 
+import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
   return (
     <div className="bg-[url('./src/assets/bgImage.jpg')] bg-no-repeat bg-cover bg-center min-h-screen">
+      <Toaster />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
